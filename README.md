@@ -37,6 +37,7 @@ API REST de gestion d'une petite bibliothèque (Spring Boot 3.5, Java 25, archit
 ---
 
 > Remplacez le contenu ci-dessous par vos réponses du TP (voir `ENONCE_TP.md`).
+
 ## Question Partie A.1
 
 1. Quelle classe joue le rôle du Modèle, du Contrôleur ? Où se trouve la logique métier ?
