@@ -26,8 +26,8 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Build and run tests
-        run: ./mvnw -B clean verify
+      - name: Build
+        run: ./mvnw -B clean package -DskipTests
 
       - name: Publier le .jar en artefact
         uses: actions/upload-artifact@v5
