@@ -10,6 +10,7 @@ on:
 
 permissions:
     checks: write
+    mvnm: write
 
 jobs:
   build-and-test:
