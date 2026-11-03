@@ -19,7 +19,10 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.Map;
 
-/** CONTRÔLEUR (le « C » de MVC) : reçoit les requêtes HTTP et délègue au service. */
+/**
+ * CONTRÔLEUR (le « C » de MVC) : reçoit les requêtes HTTP et délègue au
+ * service.
+ */
 @RestController
 @RequestMapping("/api/livres")
 @Tag(name = "Livres", description = "Gestion des livres de la bibliothèque")
@@ -47,15 +50,13 @@ public class LivreController {
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Ajouter un livre")
     public Livre creer(@RequestBody LivreRequest requete) {
-        return service.creer(requete.titre(), requete.auteur(), requete.isbn(),
-                requete.anneePublication(), requete.categorie());
+        return service.creer(requete.versLivre());
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Modifier un livre")
     public Livre modifier(@PathVariable Long id, @RequestBody LivreRequest requete) {
-        return service.modifier(id, requete.titre(), requete.auteur(), requete.isbn(),
-                requete.anneePublication(), requete.categorie());
+        return service.modifier(id, requete.versLivre());
     }
 
     @DeleteMapping("/{id}")
@@ -80,8 +81,7 @@ public class LivreController {
     @GetMapping("/{id}/frais-retard")
     @Operation(summary = "Calculer les frais de retard d'un livre (en $)")
     public Map<String, Object> fraisRetard(@PathVariable Long id, @RequestParam int joursRetard) {
-        Livre livre = service.trouver(id);
-        double frais = service.calculerFraisRetard(livre.getCategorie(), joursRetard);
+        double frais = service.calculerFraisRetardDuLivre(id, joursRetard);
         return Map.of("livreId", id, "joursRetard", joursRetard, "frais", frais);
     }
 }

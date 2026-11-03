@@ -13,6 +13,9 @@ public class LivreService {
 
     private final LivreRepository repository;
 
+    private static final int ANNEE_MIN = 1450;
+    private static final int ANNEE_MAX = 2100;
+
     public LivreService(LivreRepository repository) {
         this.repository = repository;
     }
@@ -25,36 +28,19 @@ public class LivreService {
         return repository.findById(id).orElseThrow(() -> new LivreIntrouvableException(id));
     }
 
-    public Livre creer(String titre, String auteur, String isbn, int anneePublication, String categorie) {
-        if (titre == null || titre.isBlank()) {
-            throw new IllegalArgumentException("Le titre est obligatoire");
-        }
-        if (auteur == null || auteur.isBlank()) {
-            throw new IllegalArgumentException("L'auteur est obligatoire");
-        }
-        if (anneePublication < 1450 || anneePublication > 2100) {
-            throw new IllegalArgumentException("L'année de publication est invalide");
-        }
-        Livre livre = new Livre(null, titre, auteur, isbn, anneePublication, categorie);
-        return repository.save(livre);
+    public Livre creer(Livre nouveau) {
+        valider(nouveau);
+        return repository.save(nouveau);
     }
 
-    public Livre modifier(Long id, String titre, String auteur, String isbn, int anneePublication, String categorie) {
+    public Livre modifier(Long id, Livre donnees) {
         Livre livre = trouver(id);
-        if (titre == null || titre.isBlank()) {
-            throw new IllegalArgumentException("Le titre est obligatoire");
-        }
-        if (auteur == null || auteur.isBlank()) {
-            throw new IllegalArgumentException("L'auteur est obligatoire");
-        }
-        if (anneePublication < 1450 || anneePublication > 2100) {
-            throw new IllegalArgumentException("L'année de publication est invalide");
-        }
-        livre.setTitre(titre);
-        livre.setAuteur(auteur);
-        livre.setIsbn(isbn);
-        livre.setAnneePublication(anneePublication);
-        livre.setCategorie(categorie);
+        valider(donnees);
+        livre.setTitre(donnees.getTitre());
+        livre.setAuteur(donnees.getAuteur());
+        livre.setIsbn(donnees.getIsbn());
+        livre.setAnneePublication(donnees.getAnneePublication());
+        livre.setCategorie(donnees.getCategorie());
         return repository.save(livre);
     }
 
@@ -81,26 +67,54 @@ public class LivreService {
         return repository.save(livre);
     }
 
+    public double calculerFraisRetardDuLivre(Long id, int joursRetard) {
+        Livre livre = trouver(id);
+        return calculerFraisRetard(livre.getCategorie(), joursRetard);
+    }
+
     public double calculerFraisRetard(String categorie, int joursRetard) {
-        double frais = 0;
-        if (joursRetard > 0) {
-            if (categorie.equals("JEUNESSE")) {
-                frais = joursRetard * 0.10;
-                if (frais > 5) {
-                    frais = 5;
-                }
-            } else if (categorie.equals("SCIENCE")) {
-                frais = joursRetard * 0.50;
-                if (frais > 20) {
-                    frais = 20;
-                }
-            } else {
-                frais = joursRetard * 0.25;
-                if (frais > 10) {
-                    frais = 10;
+        if (joursRetard <= 0) {
+            return 0;
+        }
+        return TarifRetard.pour(categorie).calculer(joursRetard);
+    }
+
+    private void valider(Livre livre) {
+        if (livre.getTitre() == null || livre.getTitre().isBlank()) {
+            throw new IllegalArgumentException("Le titre est obligatoire");
+        }
+        if (livre.getAuteur() == null || livre.getAuteur().isBlank()) {
+            throw new IllegalArgumentException("L'auteur est obligatoire");
+        }
+        if (livre.getAnneePublication() < ANNEE_MIN || livre.getAnneePublication() > ANNEE_MAX) {
+            throw new IllegalArgumentException("L'année de publication est invalide");
+        }
+    }
+
+    private enum TarifRetard {
+        JEUNESSE(0.10, 5),
+        SCIENCE(0.50, 20),
+        ROMAN(0.25, 10);
+
+        private final double tarifParJour;
+        private final double plafond;
+
+        TarifRetard(double tarifParJour, double plafond) {
+            this.tarifParJour = tarifParJour;
+            this.plafond = plafond;
+        }
+
+        double calculer(int joursRetard) {
+            return Math.min(joursRetard * tarifParJour, plafond);
+        }
+
+        static TarifRetard pour(String categorie) {
+            for (TarifRetard tarif : values()) {
+                if (categorie.equals(tarif.name())) {
+                    return tarif;
                 }
             }
+            return ROMAN;
         }
-        return frais;
     }
 }
