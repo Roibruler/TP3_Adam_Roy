@@ -87,25 +87,36 @@ public class LivreService {
     }
 
     public double calculerFraisRetard(String categorie, int joursRetard) {
-        double frais = 0;
-        if (joursRetard > 0) {
-            if (categorie.equals("JEUNESSE")) {
-                frais = joursRetard * 0.10;
-                if (frais > 5) {
-                    frais = 5;
-                }
-            } else if (categorie.equals("SCIENCE")) {
-                frais = joursRetard * 0.50;
-                if (frais > 20) {
-                    frais = 20;
-                }
-            } else {
-                frais = joursRetard * 0.25;
-                if (frais > 10) {
-                    frais = 10;
+        if (joursRetard <= 0) {
+            return 0;
+        }
+        return TarifRetard.pour(categorie).calculer(joursRetard);
+    }
+
+    private enum TarifRetard {
+        JEUNESSE(0.10, 5),
+        SCIENCE(0.50, 20),
+        ROMAN(0.25, 10);
+
+        private final double tarifParJour;
+        private final double plafond;
+
+        TarifRetard(double tarifParJour, double plafond) {
+            this.tarifParJour = tarifParJour;
+            this.plafond = plafond;
+        }
+
+        double calculer(int joursRetard) {
+            return Math.min(joursRetard * tarifParJour, plafond);
+        }
+
+        static TarifRetard pour(String categorie) {
+            for (TarifRetard tarif : values()) {
+                if (categorie.equals(tarif.name())) {
+                    return tarif;
                 }
             }
+            return ROMAN;
         }
-        return frais;
     }
 }
