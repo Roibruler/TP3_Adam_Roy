@@ -28,20 +28,19 @@ public class LivreService {
         return repository.findById(id).orElseThrow(() -> new LivreIntrouvableException(id));
     }
 
-    public Livre creer(String titre, String auteur, String isbn, int anneePublication, String categorie) {
-        valider(titre, auteur, anneePublication);
-        Livre livre = new Livre(null, titre, auteur, isbn, anneePublication, categorie);
-        return repository.save(livre);
+    public Livre creer(Livre nouveau) {
+        valider(nouveau);
+        return repository.save(nouveau);
     }
 
-    public Livre modifier(Long id, String titre, String auteur, String isbn, int anneePublication, String categorie) {
+    public Livre modifier(Long id, Livre donnees) {
         Livre livre = trouver(id);
-        valider(titre, auteur, anneePublication);
-        livre.setTitre(titre);
-        livre.setAuteur(auteur);
-        livre.setIsbn(isbn);
-        livre.setAnneePublication(anneePublication);
-        livre.setCategorie(categorie);
+        valider(donnees);
+        livre.setTitre(donnees.getTitre());
+        livre.setAuteur(donnees.getAuteur());
+        livre.setIsbn(donnees.getIsbn());
+        livre.setAnneePublication(donnees.getAnneePublication());
+        livre.setCategorie(donnees.getCategorie());
         return repository.save(livre);
     }
 
@@ -80,14 +79,14 @@ public class LivreService {
         return TarifRetard.pour(categorie).calculer(joursRetard);
     }
 
-    private void valider(String titre, String auteur, int anneePublication) {
-        if (titre == null || titre.isBlank()) {
+    private void valider(Livre livre) {
+        if (livre.getTitre() == null || livre.getTitre().isBlank()) {
             throw new IllegalArgumentException("Le titre est obligatoire");
         }
-        if (auteur == null || auteur.isBlank()) {
+        if (livre.getAuteur() == null || livre.getAuteur().isBlank()) {
             throw new IllegalArgumentException("L'auteur est obligatoire");
         }
-        if (anneePublication < ANNEE_MIN || anneePublication > ANNEE_MAX) {
+        if (livre.getAnneePublication() < ANNEE_MIN || livre.getAnneePublication() > ANNEE_MAX) {
             throw new IllegalArgumentException("L'année de publication est invalide");
         }
     }
