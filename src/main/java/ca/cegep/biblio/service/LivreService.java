@@ -81,6 +81,11 @@ public class LivreService {
         return repository.save(livre);
     }
 
+    public double calculerFraisRetardDuLivre(Long id, int joursRetard) {
+        Livre livre = trouver(id);
+        return calculerFraisRetard(livre.getCategorie(), joursRetard);
+    }
+
     public double calculerFraisRetard(String categorie, int joursRetard) {
         double frais = 0;
         if (joursRetard > 0) {
