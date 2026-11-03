@@ -104,3 +104,16 @@ Un code 200 "OK" veut dire que l'information est correctement parvenu
 | Enchaînements conditionnels répétés | `LivreService.java` | 84-105 | Beaucoup de `if/else` et de nombres magiques pour les frais. |
 | Duplication de code | `LivreService.java` | 29-37 et 44-52 | La même validation est copiée dans `creer` et `modifier`. |
 | Liste de paramètres trop longue | `LivreService.java` | 28 et 42 | `creer` et `modifier` ont trop de paramètres. |
+
+## Partie E.2 — Test du Dockerfile dans Codespaces
+
+```bash
+chmod +x mvnw
+./mvnw -B package
+docker build -t biblio-api:local .
+docker run -d -p 8080:8080 --name biblio biblio-api:local
+docker ps
+curl http://localhost:8080/api/livres
+```
+
+`curl` retourne la liste des 3 livres en JSON. Swagger a été testé avec le port 8080.
