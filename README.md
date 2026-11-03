@@ -95,3 +95,12 @@ Code 200
 Montant: 20
 
 Un code 200 "OK" veut dire que l'information est correctement parvenu
+
+## Partie D — Code smells
+
+| Smell | Fichier | Lignes | Problème |
+|---|---|---|---|
+| Feature envy | `LivreController.java` | 82-86 | Le contrôleur fait un calcul qui devrait être dans le service. |
+| Enchaînements conditionnels répétés | `LivreService.java` | 84-105 | Beaucoup de `if/else` et de nombres magiques pour les frais. |
+| Duplication de code | `LivreService.java` | 29-37 et 44-52 | La même validation est copiée dans `creer` et `modifier`. |
+| Liste de paramètres trop longue | `LivreService.java` | 28 et 42 | `creer` et `modifier` ont trop de paramètres. |
