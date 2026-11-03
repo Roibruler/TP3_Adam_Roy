@@ -117,3 +117,10 @@ curl http://localhost:8080/api/livres
 ```
 
 `curl` retourne la liste des 3 livres en JSON. Swagger a été testé avec le port 8080.
+
+## Partie E.5 — Versions
+
+- **v1.0.0** : première livraison (pipeline CI, tests, JaCoCo, Docker, GHCR, Release).
+- **v1.0.1** : *CORRECTIF*. Les réusinages de la partie D ne changent pas le comportement de l'API. Aucun endpoint ajouté ou retiré, mêmes requêtes et mêmes réponses. Ce n'est donc pas un changement cassant ou une nouvelle fonctionnalité.
+
+Note : les réusinages de la partie D ont été fusionnés avant la pose du tag v1.0.0. Le numéro v1.0.1 est celui qui correspond à ces changements selon SemVer.
