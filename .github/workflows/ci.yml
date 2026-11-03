@@ -39,3 +39,10 @@ jobs:
         with:
           name: application-jar
           path: target/*.jar
+
+      - name: Publier le rapport JaCoCo
+        if: always() && matrix.java == '25'
+        uses: actions/upload-artifact@v5
+        with:
+          name: rapport-jacoco
+          path: target/site/jacoco/
